@@ -22,7 +22,7 @@ Patients can book appointments online, while doctors can manage them in real tim
 
 ## 🖼️ Screenshots
 
-(./screenshots)
+All project screenshots are available in the [`./screenshots`](./screenshots) folder.
 
 
 ---
