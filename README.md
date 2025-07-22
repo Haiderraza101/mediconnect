@@ -86,6 +86,7 @@ Open a new terminal tab:
 
 ```bash
 cd frontend
+cd MediConnect
 npm install
 npm run dev
 ```
