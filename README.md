@@ -1,4 +1,4 @@
-# 💊 MediConnect – Full Stack Appointment System
+# 💊 MediConnect - Full Stack Appointment System
 
 MediConnect is a **full-stack medical appointment web application** built using **React.js**, **Node.js**, **Express**, and **MySQL**. It features two separate user interfaces: one for **patients** and one for **doctors**.
 
@@ -94,4 +94,3 @@ npm install
 npm run dev
 ```
 Then go to: http://localhost:5173
-```
