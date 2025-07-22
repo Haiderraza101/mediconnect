@@ -22,11 +22,8 @@ Patients can book appointments online, while doctors can manage them in real tim
 
 ## 🖼️ Screenshots
 
-| Patient Dashboard | Appointment Booking | Doctor Panel | Prescription |
-|-------------------|---------------------|---------------|--------------|
-| ![Patient Dashboard](./screenshots/patient-dashboard.png) | ![Booking](./screenshots/appointment-booking.png) | ![Doctor Panel](./screenshots/doctor-panel.png) | ![Prescription](./screenshots/prescription.png) |
+(./screenshots)
 
-> 📸 Tip: Place your screenshots in a `/screenshots` folder and update the links above.
 
 ---
 
