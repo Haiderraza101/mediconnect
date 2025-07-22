@@ -30,13 +30,13 @@ All project screenshots are available in the [`./screenshots`](./screenshots) fo
 ## 🛠️ Tech Stack
 
 ### Frontend:
-- ⚛️ **React.js** – Component-based UI
-- 🎨 **Tailwind CSS / CSS** – Styling
-- 🔄 **Axios** – API communication
+- ⚛️ **React.js** - Component-based UI
+- 🎨 **Tailwind CSS / CSS** - Styling
+- 🔄 **Axios** - API communication
 
 ### Backend:
-- 🟢 **Node.js + Express.js** – RESTful API backend
-- 🐬 **MySQL** – Relational database for storing users, appointments, prescriptions
+- 🟢 **Node.js + Express.js** - RESTful API backend
+- 🐬 **MySQL** - Relational database for storing users, appointments, prescriptions
 
 ---
 
