@@ -40,7 +40,6 @@ Patients can book appointments online, while doctors can manage them in real tim
 ### Backend:
 - 🟢 **Node.js + Express.js** – RESTful API backend
 - 🐬 **MySQL** – Relational database for storing users, appointments, prescriptions
-- 🔐 **JWT** – Authentication & authorization
 
 ---
 
