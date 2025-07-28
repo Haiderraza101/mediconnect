@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start":"nodemon app.js"
+    "start": "node app.js",
+    "dev": "nodemon app.js",
+    "build": "echo \"No build step required\" && exit 0"
   },
   "author": "Haider Raza",
   "license": "ISC",
@@ -16,12 +18,13 @@
     "tailwindcss": "^3.4.13"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.52.1",
     "body-parser": "^1.20.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
     "ejs": "^3.1.10",
     "express": "^4.21.0",
     "mysql2": "^3.14.1",
-    "cors": "^2.8.5",
-    "dotenv": "^16.4.7",
-    "nodemon": "^3.1.9"
+    "pg": "^8.16.3"
   }
 }

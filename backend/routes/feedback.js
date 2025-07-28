@@ -1,52 +1,40 @@
-const expresss = require('express');
-const feedbackRouter = expresss.Router();
+const express = require('express');
+const feedbackRouter = express.Router();
 const db = require('../utils/databaseutil');
 
-feedbackRouter.get("/",async(req,res)=> {
-  try{
-    const [rows] = await db.query(`
-      Select * from feedback
-      `);
-      console.log(rows);
-      res.json(rows);
-  }
-  catch(err){
-    console.log(err);
-    res.status(404).send("Server Error");
+feedbackRouter.get("/", async (req, res) => {
+  try {
+    const result = await db.query('SELECT * FROM feedback');
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Server Error");
   }
 });
 
-feedbackRouter.get("/:id",async (req,res) => {
-      try{
-        const [rows] = await db.query(
-    `  
-     Select * from feedback where feedbackid = ?
-    `,[req.params.id]
-        );
-        
-        if (rows.length===0){
-          return res.status(404).send("Feedback not found");
-        }
-        res.json([rows[0]]);
-      }
-      catch(err){
-        console.log(err);
-        res.status(404).send("Server Error")
-      }
+feedbackRouter.get("/:id", async (req, res) => {
+  try {
+    const result = await db.query('SELECT * FROM feedback WHERE feedbackid = $1', [req.params.id]);
+
+    if (result.rows.length === 0) {
+      return res.status(404).send("Feedback not found");
+    }
+    res.json([result.rows[0]]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Server Error");
+  }
 });
 
-feedbackRouter.post("/:id",async(req,res)=>{
-     const {patientid,doctorid,rating,comments}=req.body;
+feedbackRouter.post("/:id", async (req, res) => {
+  const { patientid, doctorid, rating, comments } = req.body;
 
-     try{
-      const [result] = await db.query(
-        `
-        insert into feedback (patiendid,doctorid,rating,comments) values (?,?,?,?)
-        `,
-     [patientID, doctorID, rating, comments]
+  try {
+    const insertResult = await db.query(
+      `INSERT INTO feedback (patientid, doctorid, rating, comments) VALUES ($1, $2, $3, $4) RETURNING *`,
+      [patientid, doctorid, rating, comments]
     );
-    const [inserted] = await db.query("SELECT * FROM Feedback WHERE feedbackID = ?", [result.insertId]);
-    res.status(201).json(inserted[0]);
+    res.status(201).json(insertResult.rows[0]);
   } catch (err) {
     console.error(err);
     res.status(500).send("Server Error");
@@ -55,58 +43,54 @@ feedbackRouter.post("/:id",async(req,res)=>{
 
 feedbackRouter.put("/:id", async (req, res) => {
   const {
-    patientID,
-    doctorID,
+    patientid,
+    doctorid,
     rating,
     comments,
-    feedbackPostDate
+    feedbackpostdate
   } = req.body;
 
   try {
-    let query = "UPDATE Feedback SET ";
-    const updates = [];
+    const fields = [];
     const values = [];
+    let idx = 1;
 
-    if (patientID !== undefined) {
-      updates.push("patientID = ?");
-      values.push(patientID);
+    if (patientid !== undefined) {
+      fields.push(`patientid = $${idx++}`);
+      values.push(patientid);
     }
-
-    if (doctorID !== undefined) {
-      updates.push("doctorID = ?");
-      values.push(doctorID);
+    if (doctorid !== undefined) {
+      fields.push(`doctorid = $${idx++}`);
+      values.push(doctorid);
     }
-
     if (rating !== undefined) {
-      updates.push("rating = ?");
+      fields.push(`rating = $${idx++}`);
       values.push(rating);
     }
-
     if (comments !== undefined) {
-      updates.push("comments = ?");
+      fields.push(`comments = $${idx++}`);
       values.push(comments);
     }
-
-    if (feedbackPostDate !== undefined) {
-      updates.push("feedbackPostDate = ?");
-      values.push(feedbackPostDate);
+    if (feedbackpostdate !== undefined) {
+      fields.push(`feedbackpostdate = $${idx++}`);
+      values.push(feedbackpostdate);
     }
 
-    if (updates.length === 0) {
+    if (fields.length === 0) {
       return res.status(400).send("No fields to update");
     }
 
-    query += updates.join(", ") + " WHERE feedbackID = ?";
     values.push(req.params.id);
 
-    const [result] = await db.query(query, values);
+    const query = `UPDATE feedback SET ${fields.join(", ")} WHERE feedbackid = $${idx}`;
+    const result = await db.query(query, values);
 
-    if (result.affectedRows === 0) {
+    if (result.rowCount === 0) {
       return res.status(404).send("Feedback not found");
     }
 
-    const [updated] = await db.query("SELECT * FROM Feedback WHERE feedbackID = ?", [req.params.id]);
-    res.json(updated[0]);
+    const updated = await db.query("SELECT * FROM feedback WHERE feedbackid = $1", [req.params.id]);
+    res.json(updated.rows[0]);
   } catch (err) {
     console.error(err);
     res.status(500).send("Server Error");
@@ -115,9 +99,9 @@ feedbackRouter.put("/:id", async (req, res) => {
 
 feedbackRouter.delete("/:id", async (req, res) => {
   try {
-    const [result] = await db.query("DELETE FROM Feedback WHERE feedbackID = ?", [req.params.id]);
+    const result = await db.query("DELETE FROM feedback WHERE feedbackid = $1", [req.params.id]);
 
-    if (result.affectedRows === 0) {
+    if (result.rowCount === 0) {
       return res.status(404).send("Feedback not found");
     }
 
@@ -127,6 +111,5 @@ feedbackRouter.delete("/:id", async (req, res) => {
     res.status(500).send("Server Error");
   }
 });
-
 
 module.exports = feedbackRouter;

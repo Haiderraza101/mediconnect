@@ -9,6 +9,8 @@ import DoctorForm from "./components/DoctorForm";
 import Home from "./components/Home";
 import DoctorHome from "./components/DoctorHome";
 
+const API = import.meta.env.VITE_REACT_APP_API_URL;
+
 function AppWrapper() {
   return (
     <Provider>
@@ -39,33 +41,29 @@ function App() {
       const loadUser = async () => {
         try {
           if (role === "Patient") {
-            const res = await fetch(
-              `http://localhost:3000/patients/user/${userid}`
-            );
+            const res = await fetch(`${API}/patients/user/${userid}`);
             const data = await res.json();
             if (!data || !data.firstname) throw new Error("Invalid patient");
             setcurruserdata(data);
             setcurruser("Patient");
           } else if (role === "Doctor") {
-            const res = await fetch(
-              `http://localhost:3000/doctors/user/${userid}`
-            );
+            const res = await fetch(`${API}/doctors/user/${userid}`);
             const data = await res.json();
             if (!data || !data.firstname) throw new Error("Invalid doctor");
             setcurruserdata(data);
             setcurruser("Doctor");
           }
 
-          const patientRes = await fetch("http://localhost:3000/patients");
-          const doctorRes = await fetch("http://localhost:3000/doctors");
+          const patientRes = await fetch(`${API}/patients`);
+          const doctorRes = await fetch(`${API}/doctors`);
 
           if (patientRes.ok) setpatientdata(await patientRes.json());
           if (doctorRes.ok) setdoctordata(await doctorRes.json());
 
           setselected("logged");
         } catch (err) {
-          console.error("❌ Error loading user:", err);
-          sessionStorage.removeItem("loginInfo"); // ✅ fixed
+          console.error(" Error loading user:", err);
+          sessionStorage.removeItem("loginInfo");
           setselected("login");
         } finally {
           setLoading(false);

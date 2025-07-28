@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import { AppContext } from "../store";
 import { useContext } from "react";
 
+const API = import.meta.env.VITE_REACT_APP_API_URL;
+
 const ConsultationPanel = ({ selectedPatient, onComplete }) => {
   const [fetchedVitals, setFetchedVitals] = useState(null);
   const [notes, setNotes] = useState("");
@@ -26,7 +28,7 @@ const ConsultationPanel = ({ selectedPatient, onComplete }) => {
     const fetchVitals = async () => {
       try {
         const res = await fetch(
-          `http://localhost:3000/medicalrecords/vitals/${selectedPatient.patientid}`
+          `${API}/medicalrecords/vitals/${selectedPatient.patientid}`
         );
         if (res.ok) {
           const data = await res.json();
@@ -46,7 +48,7 @@ const ConsultationPanel = ({ selectedPatient, onComplete }) => {
     const fetchAppointmentNotes = async () => {
       try {
         const res = await fetch(
-          `http://localhost:3000/appointments/notes/${selectedPatient.appointmentid}`
+          `${API}/appointments/notes/${selectedPatient.appointmentid}`
         );
         if (res.ok) {
           const data = await res.json();
@@ -86,7 +88,7 @@ const ConsultationPanel = ({ selectedPatient, onComplete }) => {
     };
 
     try {
-      const res = await fetch(`http://localhost:3000/checkupinfo/add`, {
+      const res = await fetch(`${API}/checkupinfo/add`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
@@ -137,7 +139,6 @@ const ConsultationPanel = ({ selectedPatient, onComplete }) => {
       <section className="bg-white rounded-xl shadow-md p-6 mb-10">
         <h2 className="text-2xl text-[#00695C] mb-6">Consultation Panel</h2>
 
-        {/* Patient Info */}
         <div className="flex flex-col md:flex-row gap-6 mb-6">
           <div className="flex-1">
             <p className="mb-1">
@@ -174,7 +175,6 @@ const ConsultationPanel = ({ selectedPatient, onComplete }) => {
           </ul>
         </div>
 
-        {/* Symptoms */}
         <div className="mb-6 bg-gray-50 p-4 rounded border">
           <h3 className="text-lg font-medium mb-2 text-[#00695C]">
             Symptoms / Complaints
@@ -184,7 +184,6 @@ const ConsultationPanel = ({ selectedPatient, onComplete }) => {
           </p>
         </div>
 
-        {/* Extra Notes */}
         <div className="mb-6 bg-gray-50 p-4 rounded border">
           <h3 className="text-lg font-medium mb-2 text-[#00695C]">
             Extra Notes
@@ -192,10 +191,8 @@ const ConsultationPanel = ({ selectedPatient, onComplete }) => {
           <p className="text-gray-800">{notes || "No extra Notes"}</p>
         </div>
 
-        {/* Prescription File (Optional) */}
         <input type="file" className="mb-4" />
 
-        {/* Medicines Inputs */}
         {[1, 2, 3].map((num) => (
           <div key={num} className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
             <input
@@ -216,7 +213,6 @@ const ConsultationPanel = ({ selectedPatient, onComplete }) => {
           </div>
         ))}
 
-        {/* Notes */}
         <textarea
           ref={prescriptionNotes}
           placeholder="Prescription Notes"
@@ -224,7 +220,6 @@ const ConsultationPanel = ({ selectedPatient, onComplete }) => {
           rows="3"
         ></textarea>
 
-        {/* Submit Button */}
         <button
           onClick={handleComplete}
           className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded font-medium transition"

@@ -2,6 +2,8 @@ import { useEffect, useState, useContext } from "react";
 import mediconnectLogo from "../images/mediconnectlogo.png";
 import { AppContext } from "../store";
 
+const API = import.meta.env.VITE_REACT_APP_API_URL;
+
 const AppointmentCard = ({ appointment }) => {
   const [showPrescription, setShowPrescription] = useState(false);
   const [medicines, setMedicines] = useState([]);
@@ -10,7 +12,7 @@ const AppointmentCard = ({ appointment }) => {
   const fetchPrescription = async () => {
     try {
       const res = await fetch(
-        `http://localhost:3000/checkupinfo/${appointment.appointmentid}`
+        `${API}/checkupinfo/${appointment.appointmentid}`
       );
       const data = await res.json();
       const meds = [];
@@ -121,7 +123,7 @@ const PatientAppointments = () => {
     const fetchAppointments = async () => {
       try {
         const res = await fetch(
-          `http://localhost:3000/appointments/my/${curruserdata.patientid}`
+          `${API}/appointments/my/${curruserdata.patientid}`
         );
         const data = await res.json();
         setAppointments(data);

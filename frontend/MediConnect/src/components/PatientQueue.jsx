@@ -2,20 +2,21 @@ import { useContext, useEffect, useState } from "react";
 import { AppContext } from "../store";
 import ConsultationPanel from "./ConsultationPanel";
 
+const API = import.meta.env.VITE_REACT_APP_API_URL;
+
 const PatientQueue = () => {
   const { curruserdata } = useContext(AppContext);
   const [patients, setPatients] = useState([]);
   const [selectedPatient, setSelectedPatient] = useState(null);
-  const [loading, setLoading] = useState(true); // loading flag
-
+  const [loading, setLoading] = useState(true);
   const fetchQueue = async () => {
     try {
       setLoading(true);
       const res = await fetch(
-        `http://localhost:3000/appointments/queue/${curruserdata.doctorid}`
+        `${API}/appointments/queue/${curruserdata.doctorid}`
       );
       const data = await res.json();
-      console.log("📥 Queue Fetched:", data); // Debug log
+      console.log("Queue Fetched:", data);
       setPatients(data);
     } catch (err) {
       console.error("Error fetching patient queue:", err);
@@ -26,12 +27,9 @@ const PatientQueue = () => {
 
   const markAsCompleted = async (appointmentid) => {
     try {
-      await fetch(
-        `http://localhost:3000/appointments/complete/${appointmentid}`,
-        {
-          method: "PUT",
-        }
-      );
+      await fetch(`${API}/appointments/complete/${appointmentid}`, {
+        method: "PUT",
+      });
       setPatients((prev) =>
         prev.map((p) =>
           p.appointmentid === appointmentid
@@ -49,7 +47,7 @@ const PatientQueue = () => {
     if (curruserdata?.doctorid) {
       fetchQueue();
     }
-  }, [curruserdata]); // run only when doctorid is available
+  }, [curruserdata]);
 
   return (
     <section

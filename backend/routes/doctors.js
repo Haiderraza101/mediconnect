@@ -1,65 +1,59 @@
 const express = require('express');
 const doctorRouter = express.Router();
-const db= require('../utils/databaseutil');
+const db = require('../utils/databaseutil');
 
-doctorRouter.get("/",async (req,res)=>{
-try{
-  const [rows] = await db.query('Select * from doctors');
-  console.log(rows);
-  res.json(rows);
-}
-catch(err){
-    console.log(err);
-    res.status(404).send("Server End");
-}
-});
-
-doctorRouter.get("/:id",async(req,res) => {
-
-  try{
-    const [rows] = await db.query(
-    `Select d.firstname , d.lastname from Doctors d 
-    join Users u on d.userid = u.userid 
-    where d.doctorid = ? 
-    `,
-    [req.params.id]
-  )
-
-  if(rows.length===0){
-    return res.status(404).json({error:"Doctor  not Found"});
-  }
-  res.json(rows[0]);
-  }
-  catch(err){
-    console.log(err);
-    res.status(404).send("Server Error");
-  }
-});
-
-doctorRouter.get("/user/:userid", async (req, res) => {
+// GET all doctors
+doctorRouter.get('/', async (req, res) => {
   try {
-    const [rows] = await db.query(
-      `
-      SELECT d.*, u.username 
-      FROM doctors d
-      JOIN users u ON d.userid = u.userid 
-      WHERE d.userid = ?
-      `,
+    const result = await db.query('SELECT * FROM doctors');
+    res.json(result.rows);
+  } catch (err) {
+     console.error('ERROR:', err.message);
+res.status(500).json({ error: err.message })
+  }
+});
+
+// GET doctor by ID
+doctorRouter.get('/:id', async (req, res) => {
+  try {
+    const result = await db.query(
+      `SELECT d.firstname, d.lastname FROM doctors d 
+       JOIN users u ON d.userid = u.userid 
+       WHERE d.doctorid = $1`,
+      [req.params.id]
+    );
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Doctor not found' });
+    }
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error('ERROR:', err.message);
+res.status(500).json({ error: err.message });
+
+  }
+});
+
+// GET doctor by user ID
+doctorRouter.get('/user/:userid', async (req, res) => {
+  try {
+    const result = await db.query(
+      `SELECT d.*, u.username FROM doctors d 
+       JOIN users u ON d.userid = u.userid 
+       WHERE d.userid = $1`,
       [req.params.userid]
     );
-
-    if (rows.length === 0) {
-      return res.status(404).json({ error: "Doctor not found" });
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Doctor not found' });
     }
-
-    res.json(rows[0]);
+    res.json(result.rows[0]);
   } catch (err) {
-    console.log(err);
-    res.status(404).json({ error: "Server Error" });
+    console.error(err);
+    res.status(500).json({ error: 'Server Error' });
   }
 });
 
-doctorRouter.post("/",async(req,res)=>{
+// CREATE doctor
+doctorRouter.post('/', async (req, res) => {
   const {
     userid,
     firstname,
@@ -70,186 +64,162 @@ doctorRouter.post("/",async(req,res)=>{
     availaibility,
     age,
     qualification,
-    previousexperience
-    
-   } = req.body;
-
-  try{
-    const [result] = await db.query(
-      `
-      insert into doctors (userid,firstname,lastname,specialization,contactnumber,email,availaibility,age,qualification,previousexperience)
-      values (?,?,?,?,?,?,?,?,?,?)
-      `,[
-         userid,
-         firstname,
-         lastname,
-         specialization,
-         contactnumber,
-         email,
-        availaibility,
-         age,
-         qualification,
-         previousexperience,
-      ]
-    );
-
-    const [inserteddoctor] = await db.query(
-      `
-      Select * from doctors where doctorid=?
-      `,[
-        [result.insertId]
-      ]
-    );
-    res.status(201).json(inserteddoctor[0]);
-
-  }
-  catch(err){
-     console.log(err);
-      if (err.code === "ER_DUP_ENTRY") {
-      res.status(409).send("Patient with this email or contact already exists.");
-    } else {
-       res.status(500).json({ error: "Server Error" });
-    }
-  }
-})
-doctorRouter.put("/:id" , async (req,res) => {
-
-  console.log("Entered in the updation of the doctor ");
-  const {
-   firstname,
-   lastname,
-   specialization,
-   contactnumber,
-   email,
-   availaibility,
-   age,
-   qualification,
-   previousexperience
+    previousexperience,
   } = req.body;
 
-try{
-    let query = "Update doctors set ";
-    const fields = [];
-    const values = [];
+  try {
+    const insertResult = await db.query(
+      `INSERT INTO doctors (userid, firstname, lastname, specialization, contactnumber, email, availaibility, age, qualification, previousexperience)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING *`,
+      [
+        userid,
+        firstname,
+        lastname,
+        specialization,
+        contactnumber,
+        email,
+        availaibility,
+        age,
+        qualification,
+        previousexperience,
+      ]
+    );
+    res.status(201).json(insertResult.rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Server Error' });
+  }
+});
 
+// UPDATE doctor
+doctorRouter.put('/:id', async (req, res) => {
+  const {
+    firstname,
+    lastname,
+    specialization,
+    contactnumber,
+    email,
+    availaibility,
+    age,
+    qualification,
+    previousexperience,
+  } = req.body;
 
-    if(firstname!=undefined){
-      fields.push("firstname = ? ");
+  try {
+    let fields = [];
+    let values = [];
+    let index = 1;
+
+    if (firstname !== undefined) {
+      fields.push(`firstname = $${index++}`);
       values.push(firstname);
     }
-    if(lastname!=undefined){
-      fields.push("lastname = ?");
+    if (lastname !== undefined) {
+      fields.push(`lastname = $${index++}`);
       values.push(lastname);
     }
-    if(specialization!=undefined){
-      fields.push("contactnumber = ?");
+    if (specialization !== undefined) {
+      fields.push(`specialization = $${index++}`);
+      values.push(specialization);
+    }
+    if (contactnumber !== undefined) {
+      fields.push(`contactnumber = $${index++}`);
       values.push(contactnumber);
     }
-    if(email!=undefined){
-      fields.push("email = ? ");
+    if (email !== undefined) {
+      fields.push(`email = $${index++}`);
       values.push(email);
     }
-    if(availaibility!=undefined){
-      fields.push("availaibility=?");
+    if (availaibility !== undefined) {
+      fields.push(`availaibility = $${index++}`);
       values.push(availaibility);
     }
-    if(age!=undefined){
-      fields.push("age=?");
+    if (age !== undefined) {
+      fields.push(`age = $${index++}`);
       values.push(age);
     }
-    if(qualification!=undefined){
-      fields.push("qualification = ?");
+    if (qualification !== undefined) {
+      fields.push(`qualification = $${index++}`);
       values.push(qualification);
     }
-    if(previousexperience!=undefined){
-      fields.push("previousexperience = ? ");
+    if (previousexperience !== undefined) {
+      fields.push(`previousexperience = $${index++}`);
       values.push(previousexperience);
     }
-    if(fields.length===0){
-      return res.status(404).send("No fields to update");
+
+    if (fields.length === 0) {
+      return res.status(400).send('No fields to update');
     }
 
-    query +=fields.join(",") + "where doctorid = ?";
+    const query = `UPDATE doctors SET ${fields.join(', ')} WHERE doctorid = $${index} RETURNING *`;
     values.push(req.params.id);
 
-    const [result] = await db.query(query,values);
-    
-    if (result.affectedRows === 0){
-      return res.status(404).send("Doctor not found");
-    }
-    console.log(result);
-    const [updatedDoctor] = await db.query(
-      `
-      Select * from Doctors where doctorid = ?
-      `,
-      [req.params.id]
-    )
-    res.status(200).json(updatedDoctor[0]);
-}
-catch(err){
-    console.log(err);
-    res.status(500).json({ error: "Server Error" });
-}
-});
+    const result = await db.query(query, values);
 
-doctorRouter.delete("/:id",async (req,res) => {
-  try{
-    const [result] = await db.query('Delete from Doctors where doctorid = ? ',[req.params.id])
-
-    if(result.affectedRows===0){
-      return res.status(404).send("Doctor not found");
+    if (result.rows.length === 0) {
+      return res.status(404).send('Doctor not found');
     }
 
-    res.send("Doctor deleted successfully ! ");
-  }
-  catch(err){
-      console.log(err);
-      res.status(404).send("Server Error");
+    res.status(200).json(result.rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Server Error' });
   }
 });
 
-doctorRouter.get("/specialization/:specialization", async (req, res) => {
+// DELETE doctor
+doctorRouter.delete('/:id', async (req, res) => {
   try {
-    const [rows] = await db.query(
-      `
-      SELECT d.firstname, d.lastname 
-      FROM doctors d 
-      WHERE specialization = ?
-      `,
+    const result = await db.query('DELETE FROM doctors WHERE doctorid = $1 RETURNING *', [req.params.id]);
+
+    if (result.rows.length === 0) {
+      return res.status(404).send('Doctor not found');
+    }
+
+    res.send('Doctor deleted successfully!');
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Server Error');
+  }
+});
+
+// GET doctors by specialization
+doctorRouter.get('/specialization/:specialization', async (req, res) => {
+  try {
+    const result = await db.query(
+      `SELECT firstname, lastname FROM doctors WHERE specialization = $1`,
       [req.params.specialization]
     );
 
-    if (rows.length === 0) {
-      return res.status(404).json({
-        error: "No Doctor"
-      });
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'No Doctor' });
     }
 
-    res.json(rows);
+    res.json(result.rows);
   } catch (err) {
-    console.log(err);
-    res.status(500).send("Server Error");
+    console.error(err);
+    res.status(500).send('Server Error');
   }
 });
 
-doctorRouter.get("/name/:fullname", async (req, res) => {
+// GET doctor ID by full name
+doctorRouter.get('/name/:fullname', async (req, res) => {
   try {
-    const fullname = req.params.fullname;
-    const [firstname, lastname] = fullname.split(" ");
+    const [firstname, lastname] = req.params.fullname.split(' ');
 
-    const [rows] = await db.query(
-      `SELECT doctorid FROM doctors WHERE firstname = ? AND lastname = ?`,
+    const result = await db.query(
+      `SELECT doctorid FROM doctors WHERE firstname = $1 AND lastname = $2`,
       [firstname, lastname]
     );
 
-    if (rows.length === 0) {
-      return res.status(404).json({ error: "Doctor not found" });
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Doctor not found' });
     }
 
-    res.json(rows[0]); // { doctorid: ... }
+    res.json(result.rows[0]);
   } catch (err) {
-    console.error("Error fetching doctor ID:", err);
-    res.status(500).json({ error: "Internal Server Error" });
+    console.error('Error fetching doctor ID:', err);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 });
 

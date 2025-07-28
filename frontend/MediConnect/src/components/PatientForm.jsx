@@ -1,6 +1,8 @@
 import { useRef, useState } from "react";
 import patientphoto from "../images/patientphotoforsignup.jpg";
 
+const API = import.meta.env.VITE_REACT_APP_API_URL;
+
 const PatientForm = () => {
   const userName = useRef();
   const password = useRef();
@@ -40,7 +42,7 @@ const PatientForm = () => {
         return;
       }
 
-      const userresponse = await fetch("http://localhost:3000/users", {
+      const userresponse = await fetch(`${API}/users`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -59,13 +61,11 @@ const PatientForm = () => {
         return;
       }
 
-      const userData = await fetch(
-        `http://localhost:3000/users/name/${Username}`
-      );
+      const userData = await fetch(`${API}/users/name/${Username}`);
       const userJson = await userData.json();
       userid = userJson.userid;
 
-      const patientresponse = await fetch("http://localhost:3000/patients", {
+      const patientresponse = await fetch(`$API}/patients`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -85,14 +85,13 @@ const PatientForm = () => {
       });
 
       if (!patientresponse.ok) {
-        await fetch(`http://localhost:3000/users/${userid}`, {
+        await fetch(`${API}/users/${userid}`, {
           method: "DELETE",
         });
         alert("These details already exist");
         return;
       }
 
-      // Clear form
       [
         userName,
         password,
@@ -113,7 +112,7 @@ const PatientForm = () => {
     } catch (err) {
       console.error(err);
       if (userid) {
-        await fetch(`http://localhost:3000/users/${userid}`, {
+        await fetch(`${API}/users/${userid}`, {
           method: "DELETE",
         });
       }

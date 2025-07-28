@@ -1,6 +1,8 @@
 import { useRef, useState } from "react";
 import doctorphoto from "../images/doctor.jpg";
 
+const API = import.meta.env.VITE_REACT_APP_API_URL;
+
 const DoctorForm = () => {
   const userName = useRef();
   const password = useRef();
@@ -42,7 +44,7 @@ const DoctorForm = () => {
         return;
       }
 
-      const userresponse = await fetch("http://localhost:3000/users", {
+      const userresponse = await fetch(`${API}/users`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -61,9 +63,7 @@ const DoctorForm = () => {
         return;
       }
 
-      const userData = await fetch(
-        `http://localhost:3000/users/name/${Username}`
-      );
+      const userData = await fetch(`${API}/users/name/${Username}`);
       if (!userData.ok) {
         console.log("Failed to load user data");
         return;
@@ -72,7 +72,7 @@ const DoctorForm = () => {
       const userJson = await userData.json();
       userid = userJson.userid;
 
-      const doctorresponse = await fetch("http://localhost:3000/doctors", {
+      const doctorresponse = await fetch(`${API}/doctors`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -93,7 +93,7 @@ const DoctorForm = () => {
       });
 
       if (!doctorresponse.ok) {
-        await fetch(`http://localhost:3000/users/${userid}`, {
+        await fetch(`${API}/users/${userid}`, {
           method: "DELETE",
         });
         alert("Some doctor details already exist");
@@ -121,7 +121,7 @@ const DoctorForm = () => {
     } catch (err) {
       console.log(err);
       if (userid) {
-        await fetch(`http://localhost:3000/users/${userid}`, {
+        await fetch(`${API}/users/${userid}`, {
           method: "DELETE",
         });
       }

@@ -1,6 +1,8 @@
 import { AppContext } from "../store";
 import { useContext, useState, useEffect } from "react";
 
+const API = import.meta.env.VITE_REACT_APP_API_URL;
+
 const DoctorDashboard = () => {
   const { curruserdata } = useContext(AppContext);
   const [todayappointments, setTodayAppointments] = useState(null);
@@ -19,7 +21,7 @@ const DoctorDashboard = () => {
   async function Getappointmentinformation() {
     try {
       const appointmenttodayresponse = await fetch(
-        `http://localhost:3000/appointments/appointmentstoday/${doctorid}`
+        `${API}/appointments/appointmentstoday/${doctorid}`
       );
 
       if (!appointmenttodayresponse.ok) {
@@ -38,7 +40,7 @@ const DoctorDashboard = () => {
 
     try {
       const pendingpatientresponse = await fetch(`
-        http://localhost:3000/appointments/pendingpatients/${doctorid}
+        ${API}/appointments/pendingpatients/${doctorid}
         `);
       if (!pendingpatientresponse.ok) {
         alert("Failed to fetch number of penidng appointments today");
@@ -56,7 +58,7 @@ const DoctorDashboard = () => {
 
     try {
       const completedappointmentsresponse = await fetch(`
-        http://localhost:3000/appointments/completedappointments/${doctorid}
+        ${API}/appointments/completedappointments/${doctorid}
         `);
       if (!completedappointmentsresponse.ok) {
         alert("Failed to fetch number of completed appointments today");
@@ -74,7 +76,7 @@ const DoctorDashboard = () => {
 
     try {
       const nextpatientresponse = await fetch(`
-        http://localhost:3000/appointments/nextpatient/${doctorid}
+        ${API}/appointments/nextpatient/${doctorid}
         `);
       if (!nextpatientresponse.ok) {
         return;

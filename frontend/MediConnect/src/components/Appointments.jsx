@@ -3,6 +3,8 @@ import AppointmentStatus from "./AppointmentStatus";
 import doctorwitpatient from "../images/doctorwithpatient.jpg";
 import { AppContext } from "../store";
 
+const API = import.meta.env.VITE_REACT_APP_API_URL;
+
 const Appointments = () => {
   const { appointmentstatus, curruserdata } = useContext(AppContext);
 
@@ -43,9 +45,7 @@ const Appointments = () => {
       return;
     }
 
-    const doctoridresponse = await fetch(
-      `http://localhost:3000/doctors/name/${Doctorname}`
-    );
+    const doctoridresponse = await fetch(`${API}/doctors/name/${Doctorname}`);
 
     if (!doctoridresponse.ok) {
       alert("No Doctor exists with this name");
@@ -55,55 +55,48 @@ const Appointments = () => {
     const doctorData = await doctoridresponse.json();
     const doctorid = doctorData.doctorid;
 
-    const appointmentresponse = await fetch(
-      "http://localhost:3000/appointments",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          patientid,
-          doctorid,
-          appointmentdate: Appointmentdate,
-          appointmentstatus,
-          notes: Notes,
-        }),
-      }
-    );
+    const appointmentresponse = await fetch(`${API}/appointments`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        patientid,
+        doctorid,
+        appointmentdate: Appointmentdate,
+        appointmentstatus,
+        notes: Notes,
+      }),
+    });
 
     if (!appointmentresponse.ok) {
       alert("Appointment not made. There is an error");
       return;
     }
 
-    const recordsresponse = await fetch(
-      "http://localhost:3000/medicalrecords",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          patientid,
-          doctorid,
-          diagnosis: Diagnosis,
-          bloodpressure: Bloodpressure,
-          bloodsugar: Bloodsugar,
-          heartrate: Heartrate,
-          temperature: Temperature,
-          respiratoryrate: Respiratoryrate,
-          oxygensaturation: Oxygensaturation,
-        }),
-      }
-    );
+    const recordsresponse = await fetch(`${API}/medicalrecords`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        patientid,
+        doctorid,
+        diagnosis: Diagnosis,
+        bloodpressure: Bloodpressure,
+        bloodsugar: Bloodsugar,
+        heartrate: Heartrate,
+        temperature: Temperature,
+        respiratoryrate: Respiratoryrate,
+        oxygensaturation: Oxygensaturation,
+      }),
+    });
 
     if (!recordsresponse.ok) {
       alert("There is an error. Records are not saved.");
       return;
     }
 
-    // Clear input fields
     [
       specializationofdoctor,
       doctor,
@@ -130,7 +123,7 @@ const Appointments = () => {
 
     try {
       const response = await fetch(
-        `http://localhost:3000/doctors/specialization/${Specializationofdoctor}`
+        `${API}/doctors/specialization/${Specializationofdoctor}`
       );
       if (!response.ok) {
         alert("No Doctor exists with this specialization");

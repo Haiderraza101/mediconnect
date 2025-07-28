@@ -3,6 +3,9 @@ import backgroundPhoto from "../images/backgroundPhoto.jpg";
 import { AppContext } from "../store";
 import { useRef, useContext } from "react";
 
+const API = import.meta.env.VITE_REACT_APP_API_URL;
+console.log("API Base URL:", API);
+
 function LoginPage({ setselected, setsignup, curruser, setcurruser }) {
   const userName = useRef();
   const password = useRef();
@@ -16,51 +19,41 @@ function LoginPage({ setselected, setsignup, curruser, setcurruser }) {
     const Password = password.current.value;
 
     try {
-      const userresponse = await fetch(
-        `http://localhost:3000/users/name/${Username}`
-      );
-
-      if (!userresponse.ok) {
+      const userRes = await fetch(`${API}/users/name/${Username}`);
+      if (!userRes.ok) {
         alert("Username does not exist");
         return;
       }
 
-      const { username, passwordhash, userid, role } =
-        await userresponse.json();
+      const { username, passwordhash, userid, role } = await userRes.json();
 
       if (Username !== username || Password !== passwordhash) {
         alert("Incorrect username or password");
         return;
       }
 
-      // ✅ FIXED: Corrected typo here
       sessionStorage.setItem("loginInfo", JSON.stringify({ userid, role }));
       let userdata = {};
 
-      // Fetch full user profile
       if (role === "Patient") {
-        const res = await fetch(
-          `http://localhost:3000/patients/user/${userid}`
-        );
+        const res = await fetch(`${API}/patients/user/${userid}`);
         userdata = await res.json();
         setcurruser("Patient");
       } else if (role === "Doctor") {
-        const res = await fetch(`http://localhost:3000/doctors/user/${userid}`);
+        const res = await fetch(`${API}/doctors/user/${userid}`);
         userdata = await res.json();
         setcurruser("Doctor");
       }
 
       setcurruserdata(userdata);
 
-      // Fetch all patients
-      const patientRes = await fetch("http://localhost:3000/patients");
+      const patientRes = await fetch(`${API}/patients`);
       if (patientRes.ok) {
         const patientData = await patientRes.json();
         setpatientdata(patientData);
       }
 
-      // Fetch all doctors
-      const doctorRes = await fetch("http://localhost:3000/doctors");
+      const doctorRes = await fetch(`${API}/doctors`);
       if (doctorRes.ok) {
         const doctorData = await doctorRes.json();
         setdoctordata(doctorData);
@@ -68,7 +61,7 @@ function LoginPage({ setselected, setsignup, curruser, setcurruser }) {
 
       setselected("logged");
     } catch (error) {
-      console.error("Login failed:", error);
+      console.error("Login failed:", error.message);
       alert("Login error occurred. Try again.");
     }
   }
