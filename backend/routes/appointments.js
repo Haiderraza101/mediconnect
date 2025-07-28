@@ -104,13 +104,13 @@ appointmentRouter.get("/nextpatient/:id", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
-
 appointmentRouter.get("/queue/:doctorid", async (req, res) => {
   try {
     const result = await db.query(
       `SELECT 
          a.appointmentid,
          a.patientid,
+         a.doctorid,  -- ✅ Include doctorid here
          a.appointmentdate,
          a.appointmentstatus,
          p.firstname,
@@ -118,7 +118,9 @@ appointmentRouter.get("/queue/:doctorid", async (req, res) => {
          p.age
        FROM appointments a
        JOIN patients p ON a.patientid = p.patientid
-       WHERE a.doctorid = $1 AND a.appointmentdate = CURRENT_DATE AND a.appointmentstatus != 'Completed'
+       WHERE a.doctorid = $1 
+         AND a.appointmentdate = CURRENT_DATE 
+         AND a.appointmentstatus != 'Completed'
        ORDER BY a.appointmentdate ASC`,
       [req.params.doctorid]
     );
@@ -128,6 +130,7 @@ appointmentRouter.get("/queue/:doctorid", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
 
 appointmentRouter.put("/complete/:appointmentid", async (req, res) => {
   try {

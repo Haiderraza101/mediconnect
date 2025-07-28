@@ -67,12 +67,18 @@ patientRouter.post("/", async (req, res) => {
 
   try {
     const result = await db.query(
-      `INSERT INTO patients (userid, firstname, lastname, gender, contactnumber, email, address, medicalhistory, disease, age)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING patientid`,
+      `INSERT INTO patients (
+         userid, firstname, lastname, dateofbirth,
+         gender, contactnumber, email, address,
+         medicalhistory, disease, age
+       )
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+       RETURNING patientid`,
       [
         userid,
         firstname,
         lastname,
+        dateofbirth,
         gender,
         contactnumber,
         email,
@@ -82,20 +88,23 @@ patientRouter.post("/", async (req, res) => {
         age
       ]
     );
+
     const insertedPatient = await db.query(
       `SELECT * FROM patients WHERE patientid = $1`,
       [result.rows[0].patientid]
     );
+
     res.status(201).json(insertedPatient.rows[0]);
   } catch (err) {
     console.log(err);
-    if (err.code === "23505") { // Unique violation
+    if (err.code === "23505") {
       res.status(409).send("Patient with this email or contact already exists.");
     } else {
-      return res.status(500).json({ error: "Server Error" });
+      res.status(500).json({ error: "Server Error" });
     }
   }
 });
+
 
 patientRouter.put("/:id", async (req, res) => {
   const {

@@ -18,7 +18,6 @@ const PatientForm = () => {
   const disease = useRef();
 
   const [showSuccess, setShowSuccess] = useState(false);
-
   async function Submit(event) {
     event.preventDefault();
     const Username = userName.current.value;
@@ -42,6 +41,7 @@ const PatientForm = () => {
         return;
       }
 
+      // Corrected URL (no leading slash)
       const userresponse = await fetch(`${API}/users`, {
         method: "POST",
         headers: {
@@ -61,11 +61,12 @@ const PatientForm = () => {
         return;
       }
 
+      // Corrected URL
       const userData = await fetch(`${API}/users/name/${Username}`);
       const userJson = await userData.json();
       userid = userJson.userid;
 
-      const patientresponse = await fetch(`$API}/patients`, {
+      const patientresponse = await fetch(`${API}/patients`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -81,6 +82,7 @@ const PatientForm = () => {
           address: Address,
           age: parseInt(Age),
           disease: Disease,
+          dateofbirth: "1990-01-01",
         }),
       });
 

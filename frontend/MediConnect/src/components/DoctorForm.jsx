@@ -44,6 +44,7 @@ const DoctorForm = () => {
         return;
       }
 
+      // Create User
       const userresponse = await fetch(`${API}/users`, {
         method: "POST",
         headers: {
@@ -63,6 +64,7 @@ const DoctorForm = () => {
         return;
       }
 
+      // Get User Data
       const userData = await fetch(`${API}/users/name/${Username}`);
       if (!userData.ok) {
         console.log("Failed to load user data");
@@ -72,6 +74,7 @@ const DoctorForm = () => {
       const userJson = await userData.json();
       userid = userJson.userid;
 
+      // Create Doctor
       const doctorresponse = await fetch(`${API}/doctors`, {
         method: "POST",
         headers: {
@@ -93,6 +96,7 @@ const DoctorForm = () => {
       });
 
       if (!doctorresponse.ok) {
+        // Rollback user creation if doctor creation fails.
         await fetch(`${API}/users/${userid}`, {
           method: "DELETE",
         });
@@ -100,6 +104,7 @@ const DoctorForm = () => {
         return;
       }
 
+      // Reset form values
       [
         userName,
         password,

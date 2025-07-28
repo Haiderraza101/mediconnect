@@ -23,7 +23,7 @@ recordsRouter.post("/", async (req, res) => {
       temperature,
       respiratoryrate,
       oxygensaturation,
-      diagonisis
+      diagnosis
     } = req.body;
 
     const result = await db.query(
@@ -32,7 +32,7 @@ recordsRouter.post("/", async (req, res) => {
       [
         patientid,
         doctorid,
-        diagonisis,
+         diagnosis,
         bloodpressure,
         bloodsugar,
         heartrate,

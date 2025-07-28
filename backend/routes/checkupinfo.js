@@ -7,7 +7,7 @@ checkupRouter.get("/", async (req, res) => {
     const result = await db.query('SELECT * FROM checkupinfo');
     res.json(result.rows);
   } catch (err) {
-    console.error(err);
+    console.error(err.message, err.stack);
     res.status(500).send("Server Error");
   }
 });
@@ -34,6 +34,32 @@ checkupRouter.post("/add", async (req, res) => {
     duration3
   } = req.body;
 
+  // Basic validation
+  if (!patientid || !doctorid || !appointmentid) {
+    return res.status(400).json({ error: "Missing required fields" });
+  }
+
+  console.log("Received values for /add route:", {
+    patientid,
+    doctorid,
+    appointmentid,
+    diagonisis,
+    prescriptions,
+    bloodpressure,
+    bloodsugar,
+    heartrate,
+    temperature,
+    medicine1,
+    dosage1,
+    duration1,
+    medicine2,
+    dosage2,
+    duration2,
+    medicine3,
+    dosage3,
+    duration3
+  });
+
   try {
     const query = `
       INSERT INTO checkupinfo (
@@ -59,8 +85,8 @@ checkupRouter.post("/add", async (req, res) => {
       prescriptions,
       bloodpressure,
       bloodsugar,
-      heartrate,
-      temperature,
+      heartrate ? Number(heartrate) : null,
+      temperature ? parseFloat(temperature) : null,
       medicine1,
       dosage1,
       duration1,
@@ -75,7 +101,7 @@ checkupRouter.post("/add", async (req, res) => {
     await db.query(query, values);
     res.status(200).json({ message: "Medical record added successfully." });
   } catch (error) {
-    console.error("Error adding medical record:", error);
+    console.error("Error adding medical record:", error.message, error.stack);
     res.status(500).json({ error: "Internal server error" });
   }
 });
@@ -96,7 +122,7 @@ checkupRouter.get("/:appointmentid", async (req, res) => {
     if (result.rows.length === 0) return res.status(404).json({ error: "Not found" });
     res.json(result.rows[0]);
   } catch (err) {
-    console.error(err);
+    console.error(err.message, err.stack);
     res.status(500).json({ error: "Server error" });
   }
 });

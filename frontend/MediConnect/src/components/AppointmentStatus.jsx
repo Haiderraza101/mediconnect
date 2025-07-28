@@ -38,7 +38,7 @@ const AppointmentCard = ({ appointment }) => {
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6">
         <div className="space-y-1">
           <h2 className="text-2xl font-bold text-cyan-800">
-            Appointment with Dr. {appointment.docFirst} {appointment.docLast}
+            Appointment with Dr. {appointment.docfirst} {appointment.doclast}
           </h2>
           <p className="text-sm text-gray-500">{appointment.qualification}</p>
           <p className="text-sm text-gray-600">
@@ -70,44 +70,45 @@ const AppointmentCard = ({ appointment }) => {
       </div>
 
       {showPrescription && appointment.appointmentstatus === "Completed" && (
-        <div className="bg-white border border-cyan-200 rounded-xl p-6 shadow-inner">
-          <div className="flex justify-between items-center border-b pb-4 mb-4">
-            <img
-              src={mediconnectLogo}
-              alt="MediConnect Logo"
-              className="h-12 w-auto"
-            />
-            <div className="text-right">
-              <h3 className="text-xl font-bold text-cyan-800">
-                Dr. {appointment.docFirst} {appointment.docLast}
+        <div className="bg-white border border-cyan-200 rounded-xl p-4 sm:p-6 shadow-inner text-sm sm:text-base">
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center border-b pb-4 mb-4 gap-4">
+            <div className="flex justify-center sm:justify-start">
+              <img
+                src={mediconnectLogo}
+                alt="MediConnect Logo"
+                className="h-10 sm:h-12 w-auto"
+              />
+            </div>
+            <div className="text-center sm:text-right">
+              <h3 className="text-lg sm:text-xl font-bold text-cyan-800">
+                Dr. {appointment.docfirst} {appointment.doclast}
               </h3>
-              <p className="text-sm text-gray-500">
-                {appointment.qualification}
-              </p>
+              <p className="text-gray-500">{appointment.qualification}</p>
             </div>
           </div>
 
           <div>
-            <h4 className="text-lg font-semibold text-cyan-700 mb-2">
+            <h4 className="text-base sm:text-lg font-semibold text-cyan-700 mb-2">
               Prescription
             </h4>
-            <ul className="list-disc list-inside text-gray-700 pl-4 space-y-1">
+            <ul className="list-disc list-inside text-gray-700 space-y-1 ml-2">
               {medicines.length > 0 ? (
                 medicines.map((med, idx) => <li key={idx}>{med}</li>)
               ) : (
                 <li>No medicines found</li>
               )}
             </ul>
-            <h3 className="text-lg font-semibold text-cyan-700 mt-4">
+
+            <h3 className="text-base sm:text-lg font-semibold text-cyan-700 mt-4">
               Advice:
             </h3>
-            <p>{prescription}</p>
+            <p className="text-gray-700 whitespace-pre-wrap">{prescription}</p>
           </div>
 
-          <div className="border-t pt-4 mt-6 text-sm text-gray-600">
+          <div className="border-t pt-4 mt-6 text-gray-600 text-xs sm:text-sm text-center sm:text-left">
             <p>Contact: +92-336-7407516</p>
             <p>Email: support@mediconnect.com</p>
-            <p className="italic text-xs mt-1">Powered by MediConnect</p>
+            <p className="italic text-[10px] mt-1">Powered by MediConnect</p>
           </div>
         </div>
       )}
