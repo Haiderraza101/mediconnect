@@ -110,7 +110,7 @@ appointmentRouter.get("/queue/:doctorid", async (req, res) => {
       `SELECT 
          a.appointmentid,
          a.patientid,
-         a.doctorid,  -- ✅ Include doctorid here
+         a.doctorid, 
          a.appointmentdate,
          a.appointmentstatus,
          p.firstname,

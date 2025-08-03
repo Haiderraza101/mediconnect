@@ -34,7 +34,7 @@ checkupRouter.post("/add", async (req, res) => {
     duration3
   } = req.body;
 
-  // Basic validation
+
   if (!patientid || !doctorid || !appointmentid) {
     return res.status(400).json({ error: "Missing required fields" });
   }

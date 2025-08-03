@@ -2,7 +2,6 @@ const express = require('express');
 const doctorRouter = express.Router();
 const db = require('../utils/databaseutil');
 
-// GET all doctors
 doctorRouter.get('/', async (req, res) => {
   try {
     const result = await db.query('SELECT * FROM doctors');
@@ -13,7 +12,7 @@ res.status(500).json({ error: err.message })
   }
 });
 
-// GET doctor by ID
+
 doctorRouter.get('/:id', async (req, res) => {
   try {
     const result = await db.query(
@@ -33,7 +32,7 @@ res.status(500).json({ error: err.message });
   }
 });
 
-// GET doctor by user ID
+
 doctorRouter.get('/user/:userid', async (req, res) => {
   try {
     const result = await db.query(
@@ -52,7 +51,7 @@ doctorRouter.get('/user/:userid', async (req, res) => {
   }
 });
 
-// CREATE doctor
+
 doctorRouter.post('/', async (req, res) => {
   const {
     userid,
@@ -91,7 +90,6 @@ doctorRouter.post('/', async (req, res) => {
   }
 });
 
-// UPDATE doctor
 doctorRouter.put('/:id', async (req, res) => {
   const {
     firstname,
@@ -167,7 +165,7 @@ doctorRouter.put('/:id', async (req, res) => {
   }
 });
 
-// DELETE doctor
+
 doctorRouter.delete('/:id', async (req, res) => {
   try {
     const result = await db.query('DELETE FROM doctors WHERE doctorid = $1 RETURNING *', [req.params.id]);
@@ -183,7 +181,7 @@ doctorRouter.delete('/:id', async (req, res) => {
   }
 });
 
-// GET doctors by specialization
+
 doctorRouter.get('/specialization/:specialization', async (req, res) => {
   try {
     const result = await db.query(
@@ -202,7 +200,7 @@ doctorRouter.get('/specialization/:specialization', async (req, res) => {
   }
 });
 
-// GET doctor ID by full name
+
 doctorRouter.get('/name/:fullname', async (req, res) => {
   try {
     const [firstname, lastname] = req.params.fullname.split(' ');

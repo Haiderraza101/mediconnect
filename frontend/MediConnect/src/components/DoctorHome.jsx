@@ -18,7 +18,7 @@ const DoctorHome = ({
   setcurruser,
 }) => {
   useEffect(() => {
-    console.log("👨‍⚕️ DoctorHome loaded | curruser:", curruser);
+    console.log(" DoctorHome loaded | curruser:", curruser);
   }, [curruser]);
 
   function handleLogout() {

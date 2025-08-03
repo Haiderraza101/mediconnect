@@ -41,7 +41,6 @@ const PatientForm = () => {
         return;
       }
 
-      // Corrected URL (no leading slash)
       const userresponse = await fetch(`${API}/users`, {
         method: "POST",
         headers: {
@@ -61,7 +60,6 @@ const PatientForm = () => {
         return;
       }
 
-      // Corrected URL
       const userData = await fetch(`${API}/users/name/${Username}`);
       const userJson = await userData.json();
       userid = userJson.userid;

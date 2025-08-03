@@ -154,7 +154,6 @@ const ConsultationPanel = ({ selectedPatient, onComplete }) => {
           </div>
         </div>
 
-        {/* Vitals */}
         <div className="bg-gray-50 p-4 rounded mb-6 border">
           <h3 className="text-lg font-medium mb-2 text-[#00695C]">
             Previous Vitals
